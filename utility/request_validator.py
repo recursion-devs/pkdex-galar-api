@@ -33,7 +33,7 @@ def _get_service_list(module):
   return service_list
 
 
-def _validate_params(module, service, params):
+def _validate_params(module, service, params, method):
   """
   Validate param list
   :param module: api module list
@@ -47,8 +47,13 @@ def _validate_params(module, service, params):
   """
 
   service = __import__('service.' + module + '.' + service, fromlist=[service])
-  for sparam in service.PARAMS:
+  for sparam in service.PARAMS['rparams']:
     if sparam not in params:
       return False
-  return True
 
+  if method == 'POST':
+    for sparam in service.PARAMS['rbody']:
+      if sparam not in params:
+        return False
+
+  return True

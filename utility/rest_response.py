@@ -23,19 +23,20 @@ class RestResponse:
     }
 
   @classmethod
-  def _success(cls, headers):
+  def _success(cls, headers, retBody):
     return {
       'statusCode' : 200,
       'headers' : headers,
-      'body' : {
-        'msg' : 'success'
-      }
+      'body' : retBody
     }
 
-  def Resp(self, responseCode):
+  def Resp(self, responseCode, retBody=None):
     if responseCode == RestResponse.BAD_REQUEST:
       return RestResponse._bad_request(self.headers)
 
     if responseCode == RestResponse.SUCCESS:
-      return RestResponse._success(self.headers)
+      return RestResponse._success(self.headers, retBody)
+
+
+
 

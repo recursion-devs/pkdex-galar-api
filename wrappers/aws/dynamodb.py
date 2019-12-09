@@ -11,7 +11,7 @@ class Dynamodb:
     Dynamodb AWS Wrapper
     """
 
-    def __init__(self, tableName, awsCred):
+    def __init__(self, tableName, awsCred=None):
         """
         Initialize Dynamodb Table
         :param tableName: AWS Dynamodb Tablename
@@ -20,18 +20,30 @@ class Dynamodb:
         :type awsCred: Dictionary {'aws_id': '<aws ID>', 'aws_secret' : '<aws secret token'}
         """
         self.tableName = tableName
-        self.DYNAMODB_c = boto3.client(
-            'dynamodb',
-            aws_access_key_id = awsCred['aws_id'],
-            aws_secret_access_key = awsCred['aws_secret'],
-            region_name = 'ap-southeast-1'
-        )
-        self.DYNAMODB_r = boto3.resource(
-            'dynamodb',
-            aws_access_key_id = awsCred['aws_id'],
-            aws_secret_access_key = awsCred['aws_secret'],
-            region_name = 'ap-southeast-1'
-        )
+        if awsCred:
+            self.DYNAMODB_c = boto3.client(
+                'dynamodb',
+                aws_access_key_id = awsCred['aws_id'],
+                aws_secret_access_key = awsCred['aws_secret'],
+                region_name = 'ap-southeast-1'
+            )
+            self.DYNAMODB_r = boto3.resource(
+                'dynamodb',
+                aws_access_key_id = awsCred['aws_id'],
+                aws_secret_access_key = awsCred['aws_secret'],
+                region_name = 'ap-southeast-1'
+            )
+        else:
+            self.DYNAMODB_c = boto3.client(
+                'dynamodb',
+                region_name = 'ap-southeast-1'
+            )
+
+            self.DYNAMODB_r = boto3.resource(
+                'dynamodb',
+                region_name = 'ap-southeast-1'
+            )
+
 
     def put_item(self, item):
         """

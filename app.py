@@ -1,31 +1,42 @@
 
+import json
 from utility.rest_response import RestResponse
 from utility import request_validator
 
 
 def handler(event, context):
-  print(event)
-
   respTemplate = RestResponse({
     'Access-Control-Allow-Origin' : '*'
   })
 
+  queryStringParams = event['queryStringParameters']
   path = event['requestContext']['resourcePath']
   httpMethod = event['httpMethod']
   pathParams = event['pathParameters']
-  servicePath = path.split('/')
+  pathSegments = path.split('/')
+  eventBody = event['body']
 
-  if len(servicePath) < 2:
+  if len(pathSegments) < 2:
     return respTemplate.Resp(RestResponse.BAD_REQUEST)
 
-  # Validate request params
-  if httpMethod == 'GET':
-    return
+  modulePath = pathSegments[1]
+  servicePath = pathSegments[2]
 
-  if httpMethod == 'POST':
-    postBody = event['body']
+  print('URL SEGMENTS:')
+  print(pathSegments)
+  print(modulePath)
+  print(servicePath)
 
-  return
+  # Validate Request Params
+  if not request_validator._validate_params(modulePath, servicePath, queryStringParams, eventBody, httpMethod):
+    return respTemplate.Resp(RestResponse.BAD_REQUEST)
+
+
+  # Import module + service
+  serviceModule = __import__('service.' + modulePath + '.' + servicePath, fromlist=[servicePath])
+  return serviceModule._exe(pathParams, queryStringParams, eventBody, httpMethod)
+
+
 
 
 

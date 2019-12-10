@@ -4,13 +4,13 @@ from wrappers.aws.dynamodb import Dynamodb
 
 global PARAMS
 PARAMS = {
-  'rparams' : ['id'],
+  'qparams' : [],
   'rbody' : []
 }
 
 # TODO: Get Pokemon By ID
 # /pkdex/pkmon/{id}
-def _exe(params, eventBody, method):
+def _exe(pathParams, queryParams, eventBody, method):
   if method == 'GET':
     dynamodb = Dynamodb(
       os.environ['pdexTableName']
@@ -20,13 +20,17 @@ def _exe(params, eventBody, method):
         'S' : 'pokeDex'
       },
       'objectid' : {
-        'S' : params
+        'S' : pathParams['dexId']
       }
     }
-    dynamodb.get_item(itemKey)
+    ret = dynamodb.get_item(itemKey)
+    print("RETURN PKMON")
+    print(ret)
+    return ret['Item']
 
 
-  return
+  return {}
+
 
 
 

@@ -33,7 +33,7 @@ def _get_service_list(module):
   return service_list
 
 
-def _validate_params(module, service, params, method):
+def _validate_params(module, service, queryParams, eventBody, method):
   """
   Validate param list
   :param module: api module list
@@ -47,13 +47,13 @@ def _validate_params(module, service, params, method):
   """
 
   service = __import__('service.' + module + '.' + service, fromlist=[service])
-  for sparam in service.PARAMS['rparams']:
-    if sparam not in params:
+  for sparam in service.PARAMS['qparams']:
+    if sparam not in queryParams:
       return False
 
   if method == 'POST':
     for sparam in service.PARAMS['rbody']:
-      if sparam not in params:
+      if sparam not in eventBody:
         return False
 
   return True

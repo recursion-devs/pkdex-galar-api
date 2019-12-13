@@ -31,14 +31,8 @@ def handler(event, context):
   if not request_validator._validate_params(modulePath, servicePath, queryStringParams, eventBody, httpMethod):
     return respTemplate.Resp(RestResponse.BAD_REQUEST)
 
-
   # Import module + service
   serviceModule = __import__('service.' + modulePath + '.' + servicePath, fromlist=[servicePath])
   return serviceModule._exe(pathParams, queryStringParams, eventBody, httpMethod)
-
-
-
-
-
 
 

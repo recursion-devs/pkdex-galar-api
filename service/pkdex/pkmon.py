@@ -1,8 +1,11 @@
 
 import os
-from wrappers.aws.dynamodb import Dynamodb
+import json
 
 global PARAMS
+global PKDEXDATA
+
+PKDEXDATA = json.loads(open('data/pokedexv16.json','r').read())
 PARAMS = {
   'qparams' : [],
   'rbody' : []
@@ -11,28 +14,31 @@ PARAMS = {
 # TODO: Get Pokemon By ID
 # /pkdex/pkmon/{id}
 def _exe(pathParams, queryParams, eventBody, method):
+  global PKDEXDATA
+
+  print('PKMON EXECUTING')
+
   if method == 'GET':
-    dynamodb = Dynamodb(
-      os.environ['pdexTableName']
-    )
-    itemKey = {
-      'partition' : {
-        'S' : 'pokeDex'
-      },
-      'objectid' : {
-        'S' : pathParams['dexId']
+    if pathParams['dexId'] in PKDEXDATA:
+      return {
+        'statusCode' : '200',
+        'headers' : {
+          'Access-Control-Allow-Origin' : '*',
+          'Content-Type' : 'application/json'
+        },
+        'body' : json.dumps(PKDEXDATA[pathParams['dexId']])
       }
-    }
-    ret = dynamodb.get_item(itemKey)
-    print("RETURN PKMON")
-    print(ret)
-    return ret['Item']
 
-
-  return {}
-
-
-
+  return {
+    'statusCode' : 404,
+    'headers' : {
+      'Access-Control-Allow-Origin' : '*',
+      'Content-Type' : 'application/json'
+    },
+    'body' : json.dumps({
+      'resason' : 'pokemon not found :D'
+    })
+  }
 
 
 
